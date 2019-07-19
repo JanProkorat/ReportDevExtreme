@@ -1,0 +1,4 @@
+C:\Users\proko\Documents\Gitlab tul\bakalarskaprace\ReportDevExpress\ReportDevExpress\obj\Debug\netcoreapp2.0\win-x64\ReportDevExpress.csprojAssemblyReference.cache
+C:\Users\proko\Documents\Gitlab tul\bakalarskaprace\ReportDevExpress\ReportDevExpress\obj\Debug\netcoreapp2.0\win-x64\ReportDevExpress.csproj.CoreCompileInputs.cache
+C:\Users\proko\Documents\Gitlab tul\bakalarskaprace\ReportDevExpress\ReportDevExpress\obj\Debug\netcoreapp2.0\win-x64\ReportDevExpress.AssemblyInfoInputs.cache
+C:\Users\proko\Documents\Gitlab tul\bakalarskaprace\ReportDevExpress\ReportDevExpress\obj\Debug\netcoreapp2.0\win-x64\ReportDevExpress.AssemblyInfo.cs

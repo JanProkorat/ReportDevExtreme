@@ -1,0 +1,129 @@
+﻿@{
+    ViewData["Title"] = "CosPhiView";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@if(Model != null){
+	<h2 id="nadpis">
+		Zobrazovane obdobi: od @Model.MonitoredPeriodStart do @Model.MonitoredPeriodEnd - @Model.MonitoredPeriod.Days dni,
+		@Model.MonitoredPeriod.Hours hod, @Model.MonitoredPeriod.Minutes min
+	</h2>
+	<section class="section" id="cosPhiDeviationSection">
+		<div class="graph">
+			@(Html.DevExtreme().Chart()
+				.ID("cosPhiDeviationChart")
+				.Palette(VizPalette.DarkMoon)
+				.CommonSeriesSettings(s => s
+					.ArgumentField("Date")
+					.Type(SeriesType.Bar)
+				)
+				.LoadingIndicator(l => l.Show(true))
+				.ArgumentAxis(a => a
+					.ArgumentType(ChartDataType.DateTime)
+					.Label(l => l
+						.OverlappingBehavior(OverlappingBehavior.Stagger)
+					)
+				)
+				.ValueAxis(a =>{
+					a.Add().Name("ExpectedValue");
+					a.Add().Name("DeviationValue");
+				})
+				.Series(s =>
+				{
+					s.Add().Name("Indukcni").ValueField("DeviationValue");
+					s.Add().Name("Kapacitni").ValueField("ExpectedValue");
+				})
+				.Legend(l => l
+						.VerticalAlignment(VerticalEdge.Top)
+						.HorizontalAlignment(HorizontalAlignment.Center)
+					)
+				.Title(t => t
+					.Text("Odchylka uciniku od ocekavane hodnoty")
+				)
+				.Tooltip(t => t
+						.Enabled(true)
+						.Shared(true)
+						.CustomizeTooltip(
+						@<text>
+							function(info) {
+								return {
+									html: "<div><div class='tooltip-header'>" +
+									info.argumentText + "</div>" +
+									"<div class='tooltip-body'><div class='series-name'>" +
+									info.points[0].seriesName + ": " + info.points[0].valueText +
+									"</div><div class='series-name'>" +
+									info.points[1].seriesName + ": " + info.points[1].valueText +
+									" </div></div></div>"
+								};
+							}
+						</text>)
+					)
+				.Export(e => e.Enabled(true))
+				.DataSource(d => d.StaticJson().Url(Url.Action("GetCosPhiDevData")))
+			)
+			@(Html.DevExtreme().RangeSelector()
+			.Size(s => s.Height(120))
+			.Scale(s => s
+				.MinorTickInterval(VizTimeInterval.Hour)
+				.TickInterval(i => i.Hours(4))
+				.ValueType(ChartDataType.DateTime)
+			)
+			.Chart(c => c
+				.Series(s =>
+				{
+					s.Add().ArgumentField("Date").ValueField("ExpectedValue");
+					s.Add().ArgumentField("Date").ValueField("DeviationValue");
+				})
+				.Palette(VizPalette.DarkMoon)
+			)
+			.Behavior(b => b.CallValueChanged(ValueChangedCallMode.OnMoving))
+			.OnValueChanged(@<text>
+				function(e) {
+					var zoomedChart = $("#cosPhiDeviationChart").dxChart("instance");
+					zoomedChart.getArgumentAxis().visualRange(e.value);
+				}
+			</text>)
+			.DataSource(d => d
+				.StaticJson()
+				.Url(Url.Action("GetCosPhiDevData"))
+			)
+		)
+		</div>
+		<div class="info" id="cosPhiInfo">
+			@(Html.DevExtreme().DataGrid()
+				.ID("cosPhiContainer")
+				.ShowBorders(true)
+				.HoverStateEnabled(true)
+				.Export(e => e.Enabled(true).FileName("Ucinik-Info").AllowExportSelectedData(true))
+				.GroupPanel(g => g.Visible(true))
+				.Grouping(g => g.AutoExpandAll(false))
+				.Paging(p => p.PageSize(10))
+				.AllowColumnReordering(true)
+				.AllowColumnResizing(true)
+				.ColumnAutoWidth(true)
+				.ShowBorders(true)
+				.ColumnChooser(c => c.Enabled(true))
+				.ColumnFixing(c => c.Enabled(true))
+				.RepaintChangesOnly(true)
+				.AllowColumnResizing(true)
+				.DataSource(d => d
+					.StaticJson()
+					.Url(Url.Action("GetCosPhiInfo"))
+				)
+				.SearchPanel(s => s
+					.Visible(true)
+					.HighlightCaseSensitive(true)
+				)
+				.OnCellPrepared("dataGrid_cellPrepared_handler")
+			)
+		</div>
+	</section>
+	<script type="text/javascript">
+		function dataGrid_cellPrepared_handler(e) {
+			if (e.rowType === "data" && e.column.dataField === "Hodnota odchylky") {
+				e.cellElement.css("color", e.value > 0.05 ? "red" : "black");
+			}
+		}
+	</script>
+
+
+}

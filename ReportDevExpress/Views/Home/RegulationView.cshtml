@@ -1,0 +1,246 @@
+﻿
+@{
+	ViewData["Title"] = "RegulationView";
+	Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@if(Model != null)
+{
+		<h2 id="nadpis">
+		Zobrazovane obdobi: od @Model.MonitoredPeriodStart do @Model.MonitoredPeriodEnd - @Model.MonitoredPeriod.Days dni,
+		@Model.MonitoredPeriod.Hours hod, @Model.MonitoredPeriod.Minutes min
+	</h2>
+	<section class="section" id="deviationSection">
+		<div class="graph">
+			@(Html.DevExtreme().Chart()
+				.ID("deviationChart")
+				.Palette(VizPalette.HarmonyLight)
+				.CommonSeriesSettings(s => s
+					.ArgumentField("Date")
+
+				)
+				.DataSource(d => d
+					.StaticJson()
+					.Url(Url.Action("GetRegulatoryDeviationData"))
+				)
+				.Series(s =>
+				{
+					s.Add().Name("Ocekavany jalovy vykon").ValueField("ExpectedValue").Type(SeriesType.Line);
+					s.Add().Name("Regulacni odchylka od jaloveho vykonu").ValueField("DeviationValue").Type(SeriesType.Bar);
+				})
+
+				.ValueAxis(a =>
+				{
+					a.Add().Name("ExpectedValue");
+					a.Add().Name("DeviationValue");
+				})
+				.ArgumentAxis(a => a
+					.ArgumentType(ChartDataType.DateTime)
+					.Label(l => l
+						.OverlappingBehavior(OverlappingBehavior.Stagger)
+					)
+				)
+				.Title(t => t
+					.Text("Graf regulacni odchylky od jaloveho vykonu")
+					.Subtitle(s => s.Text("v Kvar"))
+				)
+				.Size(s => s.Height(420))
+				.LoadingIndicator(l => l.Show(true))
+				.Export(e => e.Enabled(true))
+				.Tooltip(t => t
+					.Enabled(true)
+					.Shared(true)
+					.CustomizeTooltip(
+							@<text>
+								function(info) {
+								return {
+								html: "<div><div class='tooltip-header'>" +
+										info.argumentText + "</div>" +
+										"<div class='tooltip-body'><div class='series-name'>" +
+											info.points[0].seriesName + ": " + info.points[0].valueText +
+											"</div><div class='series-name'>" +
+											info.points[1].seriesName + ": " + info.points[1].valueText +
+											"</div></div></div>"
+									};
+								}
+							</text>)
+				 )
+				 .Legend(l => l
+					 .VerticalAlignment(VerticalEdge.Top)
+					 .HorizontalAlignment(HorizontalAlignment.Center)
+				 )
+			)
+
+			@(Html.DevExtreme().RangeSelector()
+				.Size(s => s.Height(150))
+				.Scale(s => s
+					.MinorTickInterval(VizTimeInterval.Hour)
+					.TickInterval(i => i.Hours(4))
+					.ValueType(ChartDataType.DateTime)
+				)
+				.Chart(c => c
+					.Series(s =>
+					{
+						s.Add().ArgumentField("Date").ValueField("ExpectedValue");
+						s.Add().ArgumentField("Date").ValueField("DeviationValue");
+					})
+					.Palette(VizPalette.HarmonyLight)
+				)
+				.Behavior(b => b.CallValueChanged(ValueChangedCallMode.OnMoving))
+				.OnValueChanged(@<text>
+					function(e) {
+						var zoomedChart = $("#deviationChart").dxChart("instance");
+						zoomedChart.getArgumentAxis().visualRange(e.value);
+					}
+				</text>)
+				.DataSource(d => d
+					.StaticJson()
+					.Url(Url.Action("GetRegulatoryDeviationData"))
+				)
+			)
+		</div>
+		<div class="graph" id="avgGraphDiv">
+			@(Html.DevExtreme().Chart()
+					.ID("deviationAvgChart")
+					.Palette(VizPalette.HarmonyLight)
+					.CommonSeriesSettings(s => s
+						.ArgumentField("Date")
+
+					)
+					.DataSource(d => d
+						.StaticJson()
+						.Url(Url.Action("GetRegulatoryDeviationData"))
+					)
+					.Series(s =>
+					{
+						s.Add().Name("Prumerna hodnota za 10 minut").ValueField("avgValue10M").Type(SeriesType.Bar);
+						s.Add().Name("Prumerna hodnota za 30 minut").ValueField("avgValue30M").Type(SeriesType.Bar);
+						s.Add().Name("Prumerna hodnota za hodinu").ValueField("avgValue1H").Type(SeriesType.Bar);
+						s.Add().Name("Prumerna hodnota za 6 hodin").ValueField("avgValue6H").Type(SeriesType.Bar);
+						s.Add().Name("Prumerna hodnota za den").ValueField("avgValue1D").Type(SeriesType.Bar);
+					})
+
+					.ValueAxis(a =>
+					{
+						a.Add().Name("ExpectedValue");
+						a.Add().Name("DeviationValue");
+					})
+					.ArgumentAxis(a => a
+						.ArgumentType(ChartDataType.DateTime)
+						.Label(l => l
+							.OverlappingBehavior(OverlappingBehavior.Stagger)
+						)
+					)
+					.Title(t => t
+						.Text("Graf zprumerovane regulacni odchylky")
+						.Subtitle(s => s.Text("v Kvar"))
+					)
+					.Size(s => s.Height(420))
+					.LoadingIndicator(l => l.Show(true))
+					.Export(e => e.Enabled(true))
+					.Tooltip(t => t
+						.Enabled(true)
+						.Shared(true)
+						.CustomizeTooltip(
+								@<text>
+									function(info) {
+									return {
+									html: "<div><div class='tooltip-header'>" +
+											info.argumentText + "</div>" +
+										  "<div class='tooltip-body'><div class='series-name'>" +
+											info.points[0].seriesName + ": " + info.points[0].valueText +
+										  "</div><div class='series-name'>" +
+											info.points[1].seriesName + ": " + info.points[1].valueText +
+										  "</div><div class='series-name'>" +
+											info.points[2].seriesName + ": " + info.points[2].valueText +
+										  "</div><div class='series-name'>" +
+											info.points[3].seriesName + ": " + info.points[3].valueText +
+										  "</div><div class='series-name'>" +
+											info.points[4].seriesName + ": " + info.points[4].valueText +
+										  "</div></div></div>"
+									};
+									}
+								</text>)
+					 )
+					 .Legend(l => l
+						 .VerticalAlignment(VerticalEdge.Top)
+						 .HorizontalAlignment(HorizontalAlignment.Center)
+					 )
+			)
+			@(Html.DevExtreme().RangeSelector()
+				.Size(s => s.Height(150))
+				.Scale(s => s
+					.MinorTickInterval(VizTimeInterval.Hour)
+					.TickInterval(i => i.Hours(4))
+					.ValueType(ChartDataType.DateTime)
+				)
+				.Chart(c => c
+					.Series(s =>
+					{
+						s.Add().ValueField("avgValue10M").ArgumentField("Date");
+						s.Add().ValueField("avgValue30M").ArgumentField("Date");
+						s.Add().ValueField("avgValue1H").ArgumentField("Date");
+						s.Add().ValueField("avgValue6H").ArgumentField("Date");
+						s.Add().ValueField("avgValue1D").ArgumentField("Date");
+					})
+					.Palette(VizPalette.HarmonyLight)
+				)
+				.Behavior(b => b.CallValueChanged(ValueChangedCallMode.OnMoving))
+				.OnValueChanged(@<text>
+					function(e) {
+						var zoomedChart = $("#deviationAvgChart").dxChart("instance");
+						zoomedChart.getArgumentAxis().visualRange(e.value);
+					}
+				</text>)
+				.DataSource(d => d
+					.StaticJson()
+					.Url(Url.Action("GetRegulatoryDeviationData"))
+				)
+			)
+		</div>
+
+		<div class="info" id="deviationInfo">
+			@(Html.DevExtreme().DataGrid()
+				.ID("deviationContainer")
+				.ShowBorders(true)
+				.Selection(s => s.Mode(SelectionMode.Multiple))
+				.HoverStateEnabled(true)
+				.Export(e => e.Enabled(true).FileName("RegOdchylka-Info").AllowExportSelectedData(true))
+				.GroupPanel(g => g.Visible(true))
+				.Grouping(g => g.AutoExpandAll(false))
+				.Paging(p => p.PageSize(10))
+				.AllowColumnReordering(true)
+				.AllowColumnResizing(true)
+				.ColumnAutoWidth(true)
+				.ShowBorders(true)
+				.ColumnFixing(c => c.Enabled(true))
+				.RepaintChangesOnly(true)
+				.DataSource(d => d
+					.StaticJson()
+					.Url(Url.Action("GetRegulatorDeviationInfo"))
+				)
+				.SearchPanel(s => s
+					.Visible(true)
+					.HighlightCaseSensitive(true)
+				)
+				.GroupPanel(g => g.Visible(true))
+				.Grouping(g => g.AutoExpandAll(false))
+			)
+		</div>
+	</section>
+	<script type="text/javascript">
+		$(function () {
+			$("#deviationChart").dxChart({
+				onLegendClick: function (e) {
+					var series = e.target;
+					if (series.isVisible()) {
+						series.hide();
+					} else {
+						series.show();
+					}
+				}
+			});
+		});
+
+	
+	</script>
+}

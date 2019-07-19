@@ -1,0 +1,56 @@
+{
+  "_from": "devexpress-reporting@~18.2.3",
+  "_id": "devexpress-reporting@18.2.7",
+  "_inBundle": false,
+  "_integrity": "sha512-B3HPhC/irv5d7BHwmfhRAVbhqpEfRNBLtF7SEwQPoyMVECMsIkfJkV1Ohft1JUeSL2is/NRRCXN/wB2wKjXSew==",
+  "_location": "/devexpress-reporting",
+  "_phantomChildren": {},
+  "_requested": {
+    "type": "range",
+    "registry": true,
+    "raw": "devexpress-reporting@~18.2.3",
+    "name": "devexpress-reporting",
+    "escapedName": "devexpress-reporting",
+    "rawSpec": "~18.2.3",
+    "saveSpec": null,
+    "fetchSpec": "~18.2.3"
+  },
+  "_requiredBy": [
+    "/"
+  ],
+  "_resolved": "https://registry.npmjs.org/devexpress-reporting/-/devexpress-reporting-18.2.7.tgz",
+  "_shasum": "38981489cb17805e9a126a5e3efd1e7dff377489",
+  "_spec": "devexpress-reporting@~18.2.3",
+  "_where": "C:\\Users\\proko\\Documents\\Gitlab tul\\ReportDevExpress\\ReportDevExpress",
+  "author": {
+    "name": "Developer Express Inc."
+  },
+  "bugs": {
+    "url": "https://www.devexpress.com/support/"
+  },
+  "bundleDependencies": false,
+  "dependencies": {
+    "@devexpress/analytics-core": "18.2.7",
+    "ace-builds": "^1.3.0",
+    "jquery": "^3.1.1",
+    "jquery-ui": "^1.12.1",
+    "knockout": "~3.4.0"
+  },
+  "deprecated": false,
+  "description": "DevExpress Reporting provides the capability to develop a reporting application to create and customize reports.",
+  "devDependencies": {
+    "webpack": "^1.13.1"
+  },
+  "homepage": "https://www.devexpress.com/",
+  "keywords": [
+    "xtrareports",
+    "reports",
+    "analytics",
+    "reporting",
+    "devexpress"
+  ],
+  "license": "SEE LICENSE IN README.md",
+  "main": "./dx-reportdesigner.js",
+  "name": "devexpress-reporting",
+  "version": "18.2.7"
+}

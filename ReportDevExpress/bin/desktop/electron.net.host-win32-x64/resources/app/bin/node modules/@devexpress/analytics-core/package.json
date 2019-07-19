@@ -1,0 +1,54 @@
+{
+  "_from": "@devexpress/analytics-core@18.2.7",
+  "_id": "@devexpress/analytics-core@18.2.7",
+  "_inBundle": false,
+  "_integrity": "sha512-D+rHNG9NeYIMBqJgzkRDWG3ndk9cfwJTLqCS+YszRet9x1pgiOUVALDPBOYU7gcx4/1qwfzOFbhzLQI50My2gw==",
+  "_location": "/@devexpress/analytics-core",
+  "_phantomChildren": {},
+  "_requested": {
+    "type": "version",
+    "registry": true,
+    "raw": "@devexpress/analytics-core@18.2.7",
+    "name": "@devexpress/analytics-core",
+    "escapedName": "@devexpress%2fanalytics-core",
+    "scope": "@devexpress",
+    "rawSpec": "18.2.7",
+    "saveSpec": null,
+    "fetchSpec": "18.2.7"
+  },
+  "_requiredBy": [
+    "/devexpress-reporting"
+  ],
+  "_resolved": "https://registry.npmjs.org/@devexpress/analytics-core/-/analytics-core-18.2.7.tgz",
+  "_shasum": "eb5149da4c4376edbdea3751a5a9e8d54332a7a9",
+  "_spec": "@devexpress/analytics-core@18.2.7",
+  "_where": "C:\\Users\\proko\\Documents\\Gitlab tul\\ReportDevExpress\\ReportDevExpress\\node_modules\\devexpress-reporting",
+  "author": {
+    "name": "Developer Express Inc."
+  },
+  "bugs": {
+    "url": "https://www.devexpress.com/support/"
+  },
+  "bundleDependencies": false,
+  "dependencies": {
+    "ace-builds": "^1.3.0",
+    "devextreme": "18.2.7",
+    "jquery": "^3.1.1",
+    "jquery-ui": "^1.12.1",
+    "knockout": "~3.4.0"
+  },
+  "deprecated": false,
+  "description": "Core library for DevExpress Analytics Components.",
+  "devDependencies": {
+    "webpack": "^1.13.1"
+  },
+  "homepage": "https://www.devexpress.com/",
+  "keywords": [
+    "analytics",
+    "devexpress"
+  ],
+  "license": "SEE LICENSE IN README.md",
+  "main": "./dx-analytics-core.js",
+  "name": "@devexpress/analytics-core",
+  "version": "18.2.7"
+}

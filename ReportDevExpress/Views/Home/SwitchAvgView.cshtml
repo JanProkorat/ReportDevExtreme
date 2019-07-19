@@ -1,0 +1,153 @@
+﻿
+@{
+    ViewData["Title"] = "SwitchAvgView";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@if(Model != null)
+{
+	<h2 id="nadpis">
+	Zobrazovane obdobi: od @Model.MonitoredPeriodStart do @Model.MonitoredPeriodEnd - @Model.MonitoredPeriod.Days dni,
+	@Model.MonitoredPeriod.Hours hod, @Model.MonitoredPeriod.Minutes min
+</h2>
+<section class="section" id="switchAvgSection">
+	<div class="graph">
+		@(Html.DevExtreme().Chart()
+			.ID("switchChart")
+			.CommonSeriesSettings(s => s
+				.ArgumentField("SwitchName")
+				.Type(SeriesType.Bar)
+				.HoverMode(ChartSeriesHoverMode.AllArgumentPoints)
+				.SelectionMode(ChartSeriesSelectionMode.AllArgumentPoints)
+				.Label(l => l
+					.Visible(true)
+					.Format(f => f
+						.Type(Format.FixedPoint)
+						.Precision(0)
+					)
+				)
+			)
+			.Series(s =>
+			{
+				s.Add().ValueField("AvgSwitchHour").Name("Prumer za hodinu");
+				s.Add().ValueField("AvgSwitchDay").Name("Prumer za den");
+				s.Add().ValueField("TotalSwitchAmount").Name("Celkovy pocet");
+				s.Add().ValueField("TimeValue").Name("Doba provozu [hod]");
+			})
+			.Title(t => t
+				.Text("Graf vyuziti jednotlivych stykacu")
+				.Subtitle(s => s.Text("v počtu sepnutí"))
+			)
+			.LoadingIndicator(l => l.Show(true))
+			.Legend(l => l
+				.VerticalAlignment(VerticalEdge.Top)
+				.HorizontalAlignment(HorizontalAlignment.Center)
+			)
+			.Export(e => e.Enabled(true))
+			.OnPointClick(@<text>
+				function(e) {
+					e.target.select();
+				}
+				</text>)
+			.DataSource(d => d.StaticJson().Url(Url.Action("GetSwitchUsageData")))
+		)
+	</div>
+	<div class="graph" id="switchTimeDiv" style="display:none;">
+		@(Html.DevExtreme().Chart()
+			.ID("switchTimeChart")
+			.Palette(VizPalette.Bright)
+			.ArgumentAxis(a => {
+				a.ArgumentType(ChartDataType.String)
+				.Label(l => l
+					.OverlappingBehavior(OverlappingBehavior.Stagger)
+				);
+			})
+			.ValueAxis(a =>
+			{
+				a.Add().Position(Position.Left).Name("TimeValue");
+
+			})
+			.CommonSeriesSettings(s => s
+				.ArgumentField("SwitchNameDegree")
+				.Label(l => l
+					.Visible(true)
+				)
+			)
+			.Series(s => {
+				s.Add().ValueField("TimeValue").Type(SeriesType.Bar).Axis("TimeValue").Name("Vyuziti");
+
+			})
+			.Legend(l => l
+				.VerticalAlignment(VerticalEdge.Top)
+				.HorizontalAlignment(HorizontalAlignment.Center)
+			)
+			.Title(t => t
+				.Text("Graf vytizeni stykacu v case")
+				.Subtitle(s => s.Text("v hodinach"))
+			)
+			.Size(s => s.Height(420))
+			.LoadingIndicator(l => l.Show(true))
+			.Export(e => e.Enabled(true))
+			.DataSource(d => d.StaticJson().Url(Url.Action("GetSwitchUsageData")))
+			.Tooltip(t => t
+				.Enabled(true)
+				.Shared(true)
+				.CustomizeTooltip(
+					@<text>
+							function(info) {
+								return {
+									html: "<div><div class='tooltip-header'>" +
+									info.argumentText + "</div>" +
+									"<div class='tooltip-body'><div class='series-name'>" +
+									info.points[0].seriesName + ": " + info.points[0].valueText +
+									"</div></div></div>"
+								};
+							}
+						</text>)
+			)
+		)
+	</div>
+	<div class="info" id="switchInfo">
+		@(Html.DevExtreme().DataGrid()
+			.ID("switchContainer")
+			.ShowBorders(true)
+			.Selection(s => s.Mode(SelectionMode.Multiple))
+			.HoverStateEnabled(true)
+			.Export(e => e.Enabled(true).FileName("Stykače-Info").AllowExportSelectedData(true))
+			.GroupPanel(g => g.Visible(true))
+			.Grouping(g => g.AutoExpandAll(false))
+			.Paging(p => p.PageSize(10))
+			.AllowColumnReordering(true)
+			.AllowColumnResizing(true)
+			.ColumnAutoWidth(true)
+			.ShowBorders(true)
+			.ColumnChooser(c => c.Enabled(true))
+			.ColumnFixing(c => c.Enabled(true))
+			.RepaintChangesOnly(true)
+			.OnCellPrepared("dataGrid_cellPrepared_handler")
+			.AllowColumnResizing(true)
+			.DataSource(d => d
+				.StaticJson()
+				.Url(Url.Action("GetSwitchInfo"))
+			)
+			.SearchPanel(s => s
+				.Visible(true)
+				.HighlightCaseSensitive(true)
+			)
+		)
+	</div>
+</section>
+<script type="text/javascript">
+	function dataGrid_cellPrepared_handler(e) {
+		if (e.rowType === "data" && e.column.dataField === "Pocet sepnuti celkem") {
+			e.cellElement.css("color", e.value >= 500000 ? "red" : e.cellElement.css("color", e.value >= 100000 ? "orange" : "black"));
+		}
+		for (var i = 1; i < 10000; i++) {
+			if (e.rowType === "data" && e.column.dataField === "Pocet sepnuti za den" + (i)) {
+				e.cellElement.css("color", e.value >= 100 ? "red" : "black");
+			}
+		}
+		
+	}
+</script>
+
+}
